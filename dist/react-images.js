@@ -1112,6 +1112,9 @@ var Lightbox = function (_Component) {
 		key: 'onRotate',
 		value: function onRotate() {
 			var degree = this.state.degree;
+			if (degree >= 360) {
+				degree = 0;
+			}
 			degree += 90;
 			this.setState({
 				degree: degree
@@ -1267,8 +1270,8 @@ var Lightbox = function (_Component) {
 						maxHeight: 'calc(100vh - ' + heightOffset + ')',
 						transform: 'rotate(' + this.state.degree + 'deg)',
 						msTransform: 'rotate(' + this.state.degree + 'deg)', /* IE 9 */
-						mozTransform: 'rotate(' + this.state.degree + 'deg)', /* Firefox */
-						webkitTransform: 'rotate(' + this.state.degree + 'deg)'
+						MozTransform: 'rotate(' + this.state.degree + 'deg)', /* Firefox */
+						WebkitTransform: 'rotate(' + this.state.degree + 'deg)'
 					}
 				}),
 				React__default.createElement(Footer, {
