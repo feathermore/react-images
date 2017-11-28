@@ -20,11 +20,15 @@ class Lightbox extends Component {
 		super(props);
 		this.theme = deepMerge(defaultTheme, props.theme);
 		this.classes = StyleSheet.create(deepMerge(defaultStyles, this.theme));
+		this.state = {
+			degree: 0
+		}
 		bindFunctions.call(this, [
 			'gotoNext',
 			'gotoPrev',
 			'closeBackdrop',
 			'handleKeyboardInput',
+			'onRotate'
 		]);
 	}
 	getChildContext () {
@@ -68,11 +72,17 @@ class Lightbox extends Component {
 			window.addEventListener('keydown', this.handleKeyboardInput);
 		}
 		if (!nextProps.isOpen && nextProps.enableKeyboardInput) {
+			this.setState({
+				degree: 0
+			})
 			window.removeEventListener('keydown', this.handleKeyboardInput);
 		}
 	}
 	componentWillUnmount () {
 		if (this.props.enableKeyboardInput) {
+			this.setState({
+				degree: 0
+			})
 			window.removeEventListener('keydown', this.handleKeyboardInput);
 		}
 	}
@@ -102,7 +112,9 @@ class Lightbox extends Component {
 			event.stopPropagation();
 		}
 		this.props.onClickNext();
-
+		this.setState({
+			degree: 0
+		})
 	}
 	gotoPrev (event) {
 		if (this.props.currentImage === 0) return;
@@ -111,8 +123,19 @@ class Lightbox extends Component {
 			event.stopPropagation();
 		}
 		this.props.onClickPrev();
-
+		this.setState({
+			degree: 0
+		})
 	}
+
+	onRotate () {
+		let degree = this.state.degree;
+		degree += 90
+		this.setState({
+			degree: degree
+		})
+	}
+
 	closeBackdrop (event) {
     // make sure event only happens if they click the backdrop
     // and if the caption is widening the figure element let that respond too
@@ -171,7 +194,9 @@ class Lightbox extends Component {
 			customControls,
 			isOpen,
 			onClose,
+			onRotate,
 			showCloseButton,
+			showRotateButton,
 			showThumbnails,
 			width,
 		} = this.props;
@@ -193,7 +218,9 @@ class Lightbox extends Component {
 					<Header
 						customControls={customControls}
 						onClose={onClose}
+						onRotate={this.onRotate}
 						showCloseButton={showCloseButton}
+						showRotateButton={showRotateButton}
 						closeButtonTitle={this.props.closeButtonTitle}
 					/>
 					{this.renderImages()}
@@ -246,9 +273,14 @@ class Lightbox extends Component {
 					alt={image.alt}
 					src={image.src}
 					srcSet={srcset}
+					ref="imagesource"
 					style={{
 						cursor: onClickImage ? 'pointer' : 'auto',
 						maxHeight: `calc(100vh - ${heightOffset})`,
+						transform: `rotate(${this.state.degree}deg)`,
+						msTransform: `rotate(${this.state.degree}deg)`, 	/* IE 9 */
+						mozTransform: `rotate(${this.state.degree}deg)`, 	/* Firefox */
+						webkitTransform: `rotate(${this.state.degree}deg)`
 					}}
 				/>
 				<Footer
@@ -305,6 +337,7 @@ Lightbox.propTypes = {
 	onClickNext: PropTypes.func,
 	onClickPrev: PropTypes.func,
 	onClose: PropTypes.func.isRequired,
+	onRotate: PropTypes.func,
 	preloadNextImage: PropTypes.bool,
 	rightArrowTitle: PropTypes.string,
 	showCloseButton: PropTypes.bool,
@@ -324,6 +357,7 @@ Lightbox.defaultProps = {
 	preloadNextImage: true,
 	rightArrowTitle: 'Next (Right arrow key)',
 	showCloseButton: true,
+	showRotateButton: true,
 	showImageCount: true,
 	theme: {},
 	thumbnailOffset: 2,

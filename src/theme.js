@@ -21,6 +21,9 @@ theme.header = {
 theme.close = {
 	fill: 'white',
 };
+theme.rotate = {
+	fill: 'white',
+};
 
 // footer
 theme.footer = {

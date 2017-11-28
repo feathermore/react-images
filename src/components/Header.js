@@ -9,8 +9,11 @@ import Icon from './Icon';
 function Header ({
 	customControls,
 	onClose,
+	onRotate,
 	showCloseButton,
+	showRotateButton,
 	closeButtonTitle,
+	rotateButtonTitle,
 	...props,
 }, {
 	theme,
@@ -20,6 +23,15 @@ function Header ({
 	return (
 		<div className={css(classes.header)} {...props}>
 			{customControls ? customControls : <span />}
+			{!!showRotateButton && (
+				<button
+					title={rotateButtonTitle}
+					className={css(classes.rotate)}
+					onClick={onRotate}
+				>
+				<Icon fill={!!theme.rotate && theme.rotate.fill || defaults.rotate.fill} type="rotate" />
+				</button>
+			)}
 			{!!showCloseButton && (
 				<button
 					title={closeButtonTitle}
@@ -36,7 +48,9 @@ function Header ({
 Header.propTypes = {
 	customControls: PropTypes.array,
 	onClose: PropTypes.func.isRequired,
+	onRotate: PropTypes.func.isRequired,
 	showCloseButton: PropTypes.bool,
+	showRotateButton: PropTypes.bool
 };
 Header.contextTypes = {
 	theme: PropTypes.object.isRequired,
@@ -45,8 +59,13 @@ Header.contextTypes = {
 const defaultStyles = {
 	header: {
 		display: 'flex',
-		justifyContent: 'space-between',
+		justifyContent: 'flex-end',
 		height: defaults.header.height,
+		width: '100%',
+		position: 'fixed',
+		top: 0,
+		right: '10px',
+		zIndex: '99'
 	},
 	close: {
 		background: 'none',
@@ -63,6 +82,21 @@ const defaultStyles = {
 		padding: 10,
 		width: 40,
 	},
+	rotate: {
+		background: 'none',
+		border: 'none',
+		cursor: 'pointer',
+		outline: 'none',
+		position: 'relative',
+		top: 0,
+		verticalAlign: 'bottom',
+
+		// increase hit area
+		height: 40,
+		marginRight: -10,
+		padding: 10,
+		width: 40,
+	}
 };
 
 export default Header;

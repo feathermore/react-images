@@ -31,6 +31,9 @@ theme.header = {
 theme.close = {
 	fill: 'white'
 };
+theme.rotate = {
+	fill: 'white'
+};
 
 // footer
 theme.footer = {
@@ -309,7 +312,11 @@ var close = (function (fill) {
 	return "<svg fill=\"" + fill + "\" version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" x=\"0px\" y=\"0px\" width=\"100%\" height=\"100%\" viewBox=\"0 0 512 512\" style=\"enable-background:new 0 0 512 512;\" xml:space=\"preserve\">\n\t\t<path d=\"M443.6,387.1L312.4,255.4l131.5-130c5.4-5.4,5.4-14.2,0-19.6l-37.4-37.6c-2.6-2.6-6.1-4-9.8-4c-3.7,0-7.2,1.5-9.8,4 L256,197.8L124.9,68.3c-2.6-2.6-6.1-4-9.8-4c-3.7,0-7.2,1.5-9.8,4L68,105.9c-5.4,5.4-5.4,14.2,0,19.6l131.5,130L68.4,387.1 c-2.6,2.6-4.1,6.1-4.1,9.8c0,3.7,1.4,7.2,4.1,9.8l37.4,37.6c2.7,2.7,6.2,4.1,9.8,4.1c3.5,0,7.1-1.3,9.8-4.1L256,313.1l130.7,131.1 c2.7,2.7,6.2,4.1,9.8,4.1c3.5,0,7.1-1.3,9.8-4.1l37.4-37.6c2.6-2.6,4.1-6.1,4.1-9.8C447.7,393.2,446.2,389.7,443.6,387.1z\"/>\n\t</svg>";
 });
 
-var icons = { arrowLeft: arrowLeft, arrowRight: arrowRight, close: close };
+var rotate = (function (fill) {
+  return "<svg t=\"1511848474971\" fill=\"" + fill + "\" viewBox=\"0 0 1024 1024\" version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" p-id=\"1008\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" width=\"20\" height=\"20\">\n    <path d=\"M950.857143 146.285714l0 256q0 14.857143-10.857143 25.714286t-25.714286 10.857143l-256 0q-24 0-33.714286-22.857143-9.714286-22.285714 8-39.428571l78.857143-78.857143q-84.571429-78.285714-199.428571-78.285714-59.428571 0-113.428571 23.142857t-93.428571 62.571429-62.571429 93.428571-23.142857 113.428571 23.142857 113.428571 62.571429 93.428571 93.428571 62.571429 113.428571 23.142857q68 0 128.571429-29.714286t102.285714-84q4-5.714286 13.142857-6.857143 8 0 14.285714 5.142857l78.285714 78.857143q5.142857 4.571429 5.428571 11.714286t-4.285714 12.857143q-62.285714 75.428571-150.857143 116.857143t-186.857143 41.428571q-89.142857 0-170.285714-34.857143t-140-93.714286-93.714286-140-34.857143-170.285714 34.857143-170.285714 93.714286-140 140-93.714286 170.285714-34.857143q84 0 162.571429 31.714286t139.714286 89.428571l74.285714-73.714286q16.571429-17.714286 40-8 22.285714 9.714286 22.285714 33.714286z\" p-id=\"1009\" \"></path>\n  </svg>";
+});
+
+var icons = { arrowLeft: arrowLeft, arrowRight: arrowRight, close: close, rotate: rotate };
 
 var Icon = function Icon(_ref) {
 	var fill = _ref.fill,
@@ -518,9 +525,12 @@ function Header(_ref, _ref2) {
 	var theme$$1 = _ref2.theme;
 	var customControls = _ref.customControls,
 	    onClose = _ref.onClose,
+	    onRotate = _ref.onRotate,
 	    showCloseButton = _ref.showCloseButton,
+	    showRotateButton = _ref.showRotateButton,
 	    closeButtonTitle = _ref.closeButtonTitle,
-	    props = objectWithoutProperties(_ref, ['customControls', 'onClose', 'showCloseButton', 'closeButtonTitle']);
+	    rotateButtonTitle = _ref.rotateButtonTitle,
+	    props = objectWithoutProperties(_ref, ['customControls', 'onClose', 'onRotate', 'showCloseButton', 'showRotateButton', 'closeButtonTitle', 'rotateButtonTitle']);
 
 	var classes = noImportant.StyleSheet.create(deepMerge(defaultStyles$4, theme$$1));
 
@@ -528,6 +538,15 @@ function Header(_ref, _ref2) {
 		'div',
 		_extends({ className: noImportant.css(classes.header) }, props),
 		customControls ? customControls : React__default.createElement('span', null),
+		!!showRotateButton && React__default.createElement(
+			'button',
+			{
+				title: rotateButtonTitle,
+				className: noImportant.css(classes.rotate),
+				onClick: onRotate
+			},
+			React__default.createElement(Icon, { fill: !!theme$$1.rotate && theme$$1.rotate.fill || theme.rotate.fill, type: 'rotate' })
+		),
 		!!showCloseButton && React__default.createElement(
 			'button',
 			{
@@ -543,7 +562,9 @@ function Header(_ref, _ref2) {
 Header.propTypes = {
 	customControls: PropTypes.array,
 	onClose: PropTypes.func.isRequired,
-	showCloseButton: PropTypes.bool
+	onRotate: PropTypes.func.isRequired,
+	showCloseButton: PropTypes.bool,
+	showRotateButton: PropTypes.bool
 };
 Header.contextTypes = {
 	theme: PropTypes.object.isRequired
@@ -552,10 +573,30 @@ Header.contextTypes = {
 var defaultStyles$4 = {
 	header: {
 		display: 'flex',
-		justifyContent: 'space-between',
-		height: theme.header.height
+		justifyContent: 'flex-end',
+		height: theme.header.height,
+		width: '100%',
+		position: 'fixed',
+		top: 0,
+		right: '10px',
+		zIndex: '99'
 	},
 	close: {
+		background: 'none',
+		border: 'none',
+		cursor: 'pointer',
+		outline: 'none',
+		position: 'relative',
+		top: 0,
+		verticalAlign: 'bottom',
+
+		// increase hit area
+		height: 40,
+		marginRight: -10,
+		padding: 10,
+		width: 40
+	},
+	rotate: {
 		background: 'none',
 		border: 'none',
 		cursor: 'pointer',
@@ -950,7 +991,10 @@ var Lightbox = function (_Component) {
 
 		_this.theme = deepMerge(theme, props.theme);
 		_this.classes = aphrodite.StyleSheet.create(deepMerge(defaultStyles, _this.theme));
-		bindFunctions.call(_this, ['gotoNext', 'gotoPrev', 'closeBackdrop', 'handleKeyboardInput']);
+		_this.state = {
+			degree: 0
+		};
+		bindFunctions.call(_this, ['gotoNext', 'gotoPrev', 'closeBackdrop', 'handleKeyboardInput', 'onRotate']);
 		return _this;
 	}
 
@@ -1001,6 +1045,9 @@ var Lightbox = function (_Component) {
 				window.addEventListener('keydown', this.handleKeyboardInput);
 			}
 			if (!nextProps.isOpen && nextProps.enableKeyboardInput) {
+				this.setState({
+					degree: 0
+				});
 				window.removeEventListener('keydown', this.handleKeyboardInput);
 			}
 		}
@@ -1008,6 +1055,9 @@ var Lightbox = function (_Component) {
 		key: 'componentWillUnmount',
 		value: function componentWillUnmount() {
 			if (this.props.enableKeyboardInput) {
+				this.setState({
+					degree: 0
+				});
 				window.removeEventListener('keydown', this.handleKeyboardInput);
 			}
 		}
@@ -1041,6 +1091,9 @@ var Lightbox = function (_Component) {
 				event.stopPropagation();
 			}
 			this.props.onClickNext();
+			this.setState({
+				degree: 0
+			});
 		}
 	}, {
 		key: 'gotoPrev',
@@ -1051,6 +1104,18 @@ var Lightbox = function (_Component) {
 				event.stopPropagation();
 			}
 			this.props.onClickPrev();
+			this.setState({
+				degree: 0
+			});
+		}
+	}, {
+		key: 'onRotate',
+		value: function onRotate() {
+			var degree = this.state.degree;
+			degree += 90;
+			this.setState({
+				degree: degree
+			});
 		}
 	}, {
 		key: 'closeBackdrop',
@@ -1118,7 +1183,9 @@ var Lightbox = function (_Component) {
 			    customControls = _props.customControls,
 			    isOpen = _props.isOpen,
 			    onClose = _props.onClose,
+			    onRotate = _props.onRotate,
 			    showCloseButton = _props.showCloseButton,
+			    showRotateButton = _props.showRotateButton,
 			    showThumbnails = _props.showThumbnails,
 			    width = _props.width;
 
@@ -1143,7 +1210,9 @@ var Lightbox = function (_Component) {
 					React__default.createElement(Header, {
 						customControls: customControls,
 						onClose: onClose,
+						onRotate: this.onRotate,
 						showCloseButton: showCloseButton,
+						showRotateButton: showRotateButton,
 						closeButtonTitle: this.props.closeButtonTitle
 					}),
 					this.renderImages()
@@ -1187,14 +1256,19 @@ var Lightbox = function (_Component) {
 				{ className: aphrodite.css(this.classes.figure) },
 				React__default.createElement('img', {
 					className: aphrodite.css(this.classes.image),
-					onClick: !!onClickImage && onClickImage,
+					onClick: onClickImage,
 					sizes: sizes,
 					alt: image.alt,
 					src: image.src,
 					srcSet: srcset,
+					ref: 'imagesource',
 					style: {
-						cursor: this.props.onClickImage ? 'pointer' : 'auto',
-						maxHeight: 'calc(100vh - ' + heightOffset + ')'
+						cursor: onClickImage ? 'pointer' : 'auto',
+						maxHeight: 'calc(100vh - ' + heightOffset + ')',
+						transform: 'rotate(' + this.state.degree + 'deg)',
+						msTransform: 'rotate(' + this.state.degree + 'deg)', /* IE 9 */
+						mozTransform: 'rotate(' + this.state.degree + 'deg)', /* Firefox */
+						webkitTransform: 'rotate(' + this.state.degree + 'deg)'
 					}
 				}),
 				React__default.createElement(Footer, {
@@ -1258,6 +1332,7 @@ Lightbox.propTypes = {
 	onClickNext: PropTypes.func,
 	onClickPrev: PropTypes.func,
 	onClose: PropTypes.func.isRequired,
+	onRotate: PropTypes.func,
 	preloadNextImage: PropTypes.bool,
 	rightArrowTitle: PropTypes.string,
 	showCloseButton: PropTypes.bool,
@@ -1277,6 +1352,7 @@ Lightbox.defaultProps = {
 	preloadNextImage: true,
 	rightArrowTitle: 'Next (Right arrow key)',
 	showCloseButton: true,
+	showRotateButton: true,
 	showImageCount: true,
 	theme: {},
 	thumbnailOffset: 2,
